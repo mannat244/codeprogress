@@ -43,6 +43,9 @@ function markComplete(itemId, totalItems) {
     saveCompletedItems();
     document.querySelector(`button[onclick="markComplete('${itemId}', ${totalItems})"]`).innerText = 'Completed';
     updateProgressBar(totalItems); // Update progress bar immediately
+    fetchRandomQuote((quote) => {
+        alert(`Congratulations! 🎉\n\n"${quote.quote}" - ${quote.author}`);
+    });
 }
 
 function saveCompletedItems() {
@@ -67,4 +70,32 @@ function updateProgressBar(totalItems) {
     const progressBar = document.getElementById('progressBar');
     const progress = (completedCount / totalItems) * 100;
     progressBar.style.width = `${progress}%`;
+}
+
+
+
+function fetchRandomQuote(callback) {
+    var category = 'inspirational'; // Replace with your desired category
+    fetch(`https://api.api-ninjas.com/v1/quotes?category=${category}`, {
+        headers: {
+            'X-Api-Key': 'C7ZXHZxGIGWu6ibkmUq5Ig==QKZwOF3YRbgckST4'
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error('API request failed');
+        }
+    })
+    .then(data => {
+        const randomIndex = Math.floor(Math.random() * data.length);
+        const randomQuote = data[randomIndex];
+        if (callback) {
+            callback(randomQuote);
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching quote:', error);
+    });
 }
